@@ -1,29 +1,26 @@
-var casperClient = require('casper-client-sdk');
+let casperClient = require('casper-client-sdk');
 const GRPC_URL = "https://node-clarity-mainnet.make.services/rpc";
 
 module.exports = {
   casperService:new casperClient.CasperServiceByJsonRPC(GRPC_URL),
   async getValidatorsInfo(){
-    var validatorsInfo = null;
+    let validatorsInfo = null;
     await this.casperService.getValidatorsInfo().then((res) => {
       validatorsInfo = res;
-      //console.log('validatorsInfo',res);
     });
     return validatorsInfo;
   },
   async getStatus(){
-    var status = null;
+    let status = null;
     await  this.casperService.getStatus().then((res) => {
       status = res;
-      //console.log('status',res);
     });
     return status;
   },
   async getLatestBlockInfo(){
-    var latestBlockResponse = null;
+    let latestBlockResponse = null;
     await this.casperService.getLatestBlockInfo().then((res) => {
       latestBlockResponse = res;
-      //console.log('validatorsInfo',res);
     });
     return latestBlockResponse;
   },

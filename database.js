@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
 const validatorsSchema = new mongoose.Schema({
   public_key: {
@@ -57,9 +57,25 @@ const validatorsCommissionsSchema = new mongoose.Schema({
   }
 });
 
+const validatorsMainInfoSchema = new mongoose.Schema({
+  api_version: {
+    type: String,
+  },
+  state_root_hash: {
+    type: String,
+  },
+  block_height: {
+    type: Number,
+  },
+  auction_state: {
+    type: Object,
+  }
+});
+
 module.exports = {
   Validators:mongoose.model('Validators', validatorsSchema),
   ValidatorsRewards:mongoose.model('ValidatorsRewards', validatorsRewardsSchema),
   ValidatorsCommissions:mongoose.model('ValidatorsCommissions', validatorsCommissionsSchema),
+  ValidatorsMainInfo:mongoose.model('ValidatorsMainInfo', validatorsMainInfoSchema),
 
 };

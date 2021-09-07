@@ -1,23 +1,19 @@
 const cors = require('cors') ;
 const bodyParser = require('body-parser');
 const express = require('express');
-var MobileDetect = require('mobile-detect');
-
-var axios = require('axios');
-
-var fs = require('fs');
-var https = require('https');
-var privateKey  = fs.readFileSync('./server.key', 'utf8');
-var certificate = fs.readFileSync('./server.crt', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
-var mongoose = require('mongoose');
-
-var casper = require('./casper.js');
-var database = require('./database.js');
-
+let MobileDetect = require('mobile-detect');
+let axios = require('axios');
+let fs = require('fs');
+let https = require('https');
+let privateKey  = fs.readFileSync('./server.key', 'utf8');
+let certificate = fs.readFileSync('./server.crt', 'utf8');
+let credentials = {key: privateKey, cert: certificate};
+let mongoose = require('mongoose');
+let casper = require('./casper.js');
+let database = require('./database.js');
 const app = express();
-app.use(cors());
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -43,8 +39,12 @@ app.post('/getAccountBalance', async (req, res) => {
 
 //getValidatorsInfo
 app.post('/getValidatorsInfo', async (req, res) => {
-  let validatorsInfo = await casper.getValidatorsInfo();
-  return res.send(validatorsInfo);
+  let listData = await database.ValidatorsMainInfo.find({}).sort({_id: -1}).limit(1);
+  if (listData.length === 1){
+    return res.send(listData[0]);
+  }else{
+    return res.send([]);
+  }
 });
 
 //getStatus
@@ -54,7 +54,6 @@ app.post('/getStatus', async (req, res) => {
 });
 
 app.post('/getValidators', async (req, res) => {
-  console.log("getValidators:", req.body);
   let public_key = req.body.public_key;
   if (public_key === "" || !public_key)
     return res.send({"status": 'OK',validators:await database.Validators.find({})});
@@ -64,24 +63,22 @@ app.post('/getValidators', async (req, res) => {
 });
 
 app.post('/getValidatorsRewards', async (req, res) => {
-  console.log("getValidatorsRewards:", req.body);
   let public_key = req.body.public_key;
   return res.send({"status": 'OK',rewards:await database.ValidatorsRewards.find({"public_key":public_key})});
 });
 
 app.post('/getValidatorsCommissions', async (req, res) => {
-  console.log("getValidatorsCommissions:", req.body);
   let public_key = req.body.public_key;
   return res.send({"status": 'OK',commissions:await database.ValidatorsCommissions.find({"public_key":public_key})});
 });
 
 app.use(express.static('public'));
 const connectDb = () => {
-  return mongoose.connect("mongodb://localhost:27017/casper", {useNewUrlParser: true});
+  return mongoose.connect("mongodb://127.0.0.1:27017/casper", {useNewUrlParser: true});
 };
 
 connectDb().then(async () => {
-  var httpsServer = https.createServer(credentials, app);
+  let httpsServer = https.createServer(credentials, app);
   httpsServer.listen(3399, () => {
     console.log(`Capser API listening on port 3399!`);
   });
